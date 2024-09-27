@@ -7,6 +7,7 @@ const urlsToCache = [
 ];
 
 self.addEventListener("install", (event) => {
+  console.log("Service Worker Installed");
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return cache.addAll(urlsToCache);
@@ -15,6 +16,7 @@ self.addEventListener("install", (event) => {
 });
 
 self.addEventListener("activate", (event) => {
+  console.log("Service Worker activated");
   const cacheWhitelist = [CACHE_NAME];
 
   event.waitUntil(
@@ -47,6 +49,7 @@ self.addEventListener("activate", (event) => {
 });
 
 self.addEventListener("fetch", (event) => {
+  console.log("Service Worker fetch");
   const requestUrl = new URL(event.request.url);
   // Cache media files (e.g., .mp4, .jpg, .png) including videos
   if (

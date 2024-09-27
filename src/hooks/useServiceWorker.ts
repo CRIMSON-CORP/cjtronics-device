@@ -21,6 +21,8 @@ function useServiceWorker(url?: string) {
       navigator.serviceWorker
         .register(url || "/service-worker.js")
         .then(() => {
+          console.log("Service Worker registered");
+
           // Listen for messages from the service worker
           navigator.serviceWorker.addEventListener("message", (event) => {
             console.log("sw event");

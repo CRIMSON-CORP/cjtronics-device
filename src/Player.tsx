@@ -126,10 +126,12 @@ const days: string[] = [
 ];
 
 function adCanPlayToday(ad: Ad) {
+  if (!ad) return false;
   return ad.adConfiguration.days.includes(days[new Date().getDay()]);
 }
 
 function adCanPlayNow(ad: Ad) {
+  if (!ad) return false;
   const startTime = new Date(ad.adConfiguration.startTime).getTime();
   const endTime = new Date(ad.adConfiguration.endTime).getTime();
   return startTime <= new Date().getTime() && new Date().getTime() <= endTime;
@@ -146,30 +148,37 @@ function View({ ads, screenView, onComplete, sendLog }: ViewProps) {
       const adToPlay = sequence[currentAdIndex];
       const adDuration = adToPlay.adConfiguration.duration * 1000; // Convert to milliseconds
 
-      if (!adCanPlayToday(adToPlay) || !adCanPlayNow(adToPlay)) {
-        {
-          setCurrentAdIndex((prevIndex) => prevIndex + 1);
-          sendLog?.({
-            accountId: adToPlay.adAccountId,
-            adId: adToPlay.adId,
-            campaignId: adToPlay.campaignId,
-            messageType: "skipped",
-            uploadRef: adToPlay.uploadRef,
-          });
-        }
-      } else {
-        sendLog?.({
-          accountId: adToPlay.adAccountId,
-          adId: adToPlay.adId,
-          campaignId: adToPlay.campaignId,
-          messageType: "play",
-          uploadRef: adToPlay.uploadRef,
-        });
+      sendLog?.({
+        accountId: adToPlay.adAccountId,
+        adId: adToPlay.adId,
+        campaignId: adToPlay.campaignId,
+        messageType: "play",
+        uploadRef: adToPlay.uploadRef,
+      });
 
-        timer = setTimeout(() => {
-          setCurrentAdIndex((prevIndex) => prevIndex + 1);
-        }, adDuration);
-      }
+      timer = setTimeout(() => {
+        setCurrentAdIndex((prevIndex) => {
+          // find the next ad that can be played
+          let nextIndex = prevIndex + 1;
+          const ad = sequence[prevIndex];
+          while (!adCanPlayToday(ad) || !adCanPlayNow(ad)) {
+            sendLog?.({
+              accountId: ad.adAccountId,
+              adId: ad.adId,
+              campaignId: ad.campaignId,
+              messageType: "skipped",
+              uploadRef: ad.uploadRef,
+            });
+
+            if (nextIndex >= sequence.length) {
+              break;
+            }
+
+            nextIndex++;
+          }
+          return nextIndex;
+        });
+      }, adDuration);
 
       return () => clearTimeout(timer); // Clear the timer when component unmounts or index changes
     } else {
@@ -211,6 +220,7 @@ function View({ ads, screenView, onComplete, sendLog }: ViewProps) {
                     objectFit: "contain",
                     width: "100%",
                     height: "100%",
+                    opacity: index === currentAdIndex ? 1 : 0,
                   }}
                 />
               ) : file.adType === "video" ? (
@@ -225,18 +235,29 @@ function View({ ads, screenView, onComplete, sendLog }: ViewProps) {
                     objectFit: "contain",
                     width: "100%",
                     height: "100%",
+                    opacity: index === currentAdIndex ? 1 : 0,
                   }}
                 />
               ) : file.adType === "iframe" ? (
                 file.adUrl.startsWith("<iframe") ? (
                   <Iframe
                     content={file.adUrl}
-                    styles={{ width: "100%", height: "100%", border: "none" }}
+                    styles={{
+                      width: "100%",
+                      height: "100%",
+                      border: "none",
+                      opacity: index === currentAdIndex ? 1 : 0,
+                    }}
                   />
                 ) : (
                   <iframe
                     src={file.adUrl}
-                    style={{ width: "100%", height: "100%", border: "none" }}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      border: "none",
+                      opacity: index === currentAdIndex ? 1 : 0,
+                    }}
                   ></iframe>
                 )
               ) : null}

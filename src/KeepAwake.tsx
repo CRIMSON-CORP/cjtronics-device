@@ -2,6 +2,7 @@ function KeepAwake() {
   return (
     <video
       loop
+      muted
       controls
       autoPlay
       src="/mute-blank.mp4"

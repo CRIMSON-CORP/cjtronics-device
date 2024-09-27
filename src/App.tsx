@@ -6,10 +6,7 @@ import Player from "./Player";
 
 function App() {
   const loaded = useServiceWorker();
-
-  if (loaded) {
-    return <LoadedApp />;
-  } else return <NoAdsScreen />;
+  return loaded ? <LoadedApp /> : <NoAdsScreen />;
 }
 
 export default App;

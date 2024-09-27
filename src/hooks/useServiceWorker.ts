@@ -1,15 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 function useServiceWorker(url?: string) {
   const [loaded, setLoaded] = useState(false);
-  const firstRender = useRef(true);
 
   useEffect(() => {
-    if (firstRender.current) {
-      firstRender.current = false;
-      return;
-    }
-
     if ("serviceWorker" in navigator) {
       // Check if a service worker is already controlling the page
       if (navigator.serviceWorker.controller) {

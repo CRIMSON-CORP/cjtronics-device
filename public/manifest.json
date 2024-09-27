@@ -1,0 +1,56 @@
+{
+  "short_name": "CJTRONIS Device",
+  "name": "CJTRONIS by Folham Device",
+  "description": "Meant to play ads from CJTRONIS on Screen",
+  "icons": [
+    {
+      "src": "/vite-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "/vite-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    }
+  ],
+  "id": "cjtronics-device",
+  "start_url": "/",
+  "display": "fullscreen",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "orientation": "any",
+  "scope": "/",
+  "related_applications": [],
+  "prefer_related_applications": false,
+  "screenshots": [
+    {
+      "src": "/image.png",
+      "sizes": "530x491",
+      "type": "image/png"
+    },
+    {
+      "src": "/image-wide.png",
+      "sizes": "1285x768",
+      "type": "image/png",
+      "form_factor": "wide"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Play Ad",
+      "short_name": "Play Ad",
+      "url": "/",
+      "icons": [
+        {
+          "src": "/vite-192.svg",
+          "sizes": "192x192",
+          "type": "image/svg+xml"
+        }
+      ]
+    }
+  ],
+  "display_override": ["window-controls-overlay"],
+  "lang": "en",
+  "dir": "ltr"
+}

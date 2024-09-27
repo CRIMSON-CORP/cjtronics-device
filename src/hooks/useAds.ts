@@ -68,7 +68,11 @@ function useAds() {
 
     const grouped = filteredCampaigsWithoutView.reduce(
       (acc: [Ad[], Ad[]], obj) => {
-        obj.campaignView === 1 ? acc[0].push(obj) : acc[1].push(obj);
+        if (obj.campaignView === 1) {
+          acc[0].push(obj);
+        } else {
+          acc[1].push(obj);
+        }
         return acc;
       },
       [[], []]

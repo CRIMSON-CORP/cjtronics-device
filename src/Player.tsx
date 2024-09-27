@@ -10,7 +10,7 @@ interface PlayerProps {
 
 function Player({ screenConfig, adGroups, widgets, sendLog }: PlayerProps) {
   const [screenView, setScreenView] = useState("player");
-  const [completedScreen, setCompletedScreen] = useState<Boolean[]>([]);
+  const [completedScreen, setCompletedScreen] = useState<boolean[]>([]);
 
   const onComplete = () => {
     setCompletedScreen((prev) => [...prev, true]);
@@ -178,7 +178,7 @@ function View({ ads, screenView, onComplete, sendLog }: ViewProps) {
       //   setCurrentAdIndex(0);
       // }, 1000 * 20);
     }
-  }, [currentAdIndex, sequence]);
+  }, [currentAdIndex, onComplete, sendLog, sequence]);
 
   useEffect(() => {
     setCurrentAdIndex(0);

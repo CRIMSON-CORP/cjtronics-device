@@ -8,21 +8,44 @@ function useSocket({ onReceiveAds }: { onReceiveAds: (data: any) => void }) {
 
   useEffect(() => {
     if (deviceCode) {
-      const newSocket = new WebSocket(
-        VITE_WEBSOCKET_URL + `?type=device&id=${deviceCode}`
-      );
+      let newSocket: WebSocket | null = null;
+      const connect = () => {
+        if (newSocket) {
+          newSocket.close();
+        }
+        newSocket = new WebSocket(
+          VITE_WEBSOCKET_URL + `?type=device&id=${deviceCode}`
+        );
 
-      newSocket.onopen = () => {
-        setSocket(newSocket);
-      };
-      newSocket.onclose = () => {
-        setSocket(null);
+        newSocket.onopen = () => {
+          setSocket(newSocket);
+        };
+        newSocket.onclose = () => {
+          setSocket(null);
+        };
+
+        newSocket.onmessage = (event) => {
+          const data = JSON.parse(event.data);
+          if (data.event === "send-to-device") {
+            onReceiveAds(data.data);
+          }
+        };
       };
 
-      newSocket.onmessage = (event) => {
-        const data = JSON.parse(event.data);
-        if (data.event === "send-to-device") {
-          onReceiveAds(data.data);
+      connect();
+
+      const handleOnline = () => {
+        if (!newSocket) {
+          connect();
+        }
+      };
+
+      window.addEventListener("online", handleOnline);
+
+      return () => {
+        window.removeEventListener("online", handleOnline);
+        if (newSocket) {
+          newSocket.close();
         }
       };
     }

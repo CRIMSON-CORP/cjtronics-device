@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import screenReferenceToConfig from "./lib/screen-config-map";
 
 interface PlayerProps {
@@ -12,9 +12,9 @@ function Player({ screenConfig, adGroups, widgets, sendLog }: PlayerProps) {
   const [screenView, setScreenView] = useState("player");
   const [completedScreen, setCompletedScreen] = useState<boolean[]>([]);
 
-  const onComplete = () => {
+  const onComplete = useCallback(() => {
     setCompletedScreen((prev) => [...prev, true]);
-  };
+  }, []);
 
   const onWidgetComplete = () => {
     setScreenView("player");

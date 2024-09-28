@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import useDeviceCode from "./useDeviceCode";
 
 const { VITE_WEBSOCKET_URL } = import.meta.env;
@@ -22,12 +22,18 @@ function useSocket({ onReceiveAds }: { onReceiveAds: (data: any) => void }) {
         };
         newSocket.onclose = () => {
           setSocket(null);
+          console.log("Socket closed");
         };
 
         newSocket.onmessage = (event) => {
           const data = JSON.parse(event.data);
           if (data.event === "send-to-device") {
             onReceiveAds(data.data);
+            return;
+          }
+
+          if (data.event === "ping") {
+            newSocket?.send(JSON.stringify({ event: "pong" }));
           }
         };
       };
@@ -51,30 +57,35 @@ function useSocket({ onReceiveAds }: { onReceiveAds: (data: any) => void }) {
     }
   }, [deviceCode, onReceiveAds]);
 
-  const sendLog = ({
-    adId,
-    accountId,
-    campaignId,
-    messageType,
-    uploadRef,
-  }: SendLogParams) => {
-    if (socket) {
-      socket.send(
-        JSON.stringify({
-          event: "device-log",
-          logs: {
-            deviceId: "90J9R6",
-            adId,
-            accountId,
-            campaignId,
-            messageType,
-            loggedOn: new Date().toISOString(),
-            uploadRef,
-          },
-        })
-      );
-    }
-  };
+  const sendLog = useCallback(
+    ({
+      adId,
+      accountId,
+      campaignId,
+      messageType,
+      uploadRef,
+    }: SendLogParams) => {
+      if (socket && socket.readyState === WebSocket.OPEN) {
+        socket.send(
+          JSON.stringify({
+            event: "device-log",
+            logs: {
+              deviceId: "90J9R6",
+              adId,
+              accountId,
+              campaignId,
+              messageType,
+              loggedOn: new Date().toISOString(),
+              uploadRef,
+            },
+          })
+        );
+      } else {
+        console.log("log cound not be sent as socket connection is lost");
+      }
+    },
+    [socket]
+  );
 
   return {
     sendLog,

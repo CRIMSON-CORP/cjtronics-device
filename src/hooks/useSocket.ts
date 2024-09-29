@@ -22,7 +22,8 @@ function useSocket({ onReceiveAds }: { onReceiveAds: (data: any) => void }) {
         };
         newSocket.onclose = () => {
           setSocket(null);
-          console.log("Socket closed");
+          console.log("Socket closed, reconnecting in 5 seconds");
+          setTimeout(connect, 5000);
         };
 
         newSocket.onmessage = (event) => {

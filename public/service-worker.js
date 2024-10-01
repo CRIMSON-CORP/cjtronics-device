@@ -70,7 +70,9 @@ self.addEventListener("fetch", (event) => {
     );
   } else if (
     event.request.method === "GET" &&
-    requestUrl.pathname.startsWith("/api/")
+    requestUrl.pathname.startsWith(
+      "https://cjtronics.tushcode.com/v1/public-advert/campaigns"
+    )
   ) {
     event.respondWith(
       fetch(event.request)

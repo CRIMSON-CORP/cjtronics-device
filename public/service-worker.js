@@ -68,6 +68,24 @@ self.addEventListener("fetch", (event) => {
         );
       })
     );
+  } else if (
+    event.request.method === "GET" &&
+    requestUrl.pathname.startsWith("/api/")
+  ) {
+    event.respondWith(
+      fetch(event.request)
+        .then(async (networkResponse) => {
+          if (!networkResponse.ok) {
+            throw new Error("Network response was not ok");
+          }
+          const cache = await caches.open(CACHE_NAME);
+          cache.put(event.request, networkResponse.clone());
+          return networkResponse;
+        })
+        .catch(async () => {
+          return caches.match(event.request);
+        })
+    );
   } else {
     // For all other requests (like API requests), bypass the cache
     event.respondWith(fetch(event.request));
